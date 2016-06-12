@@ -1,0 +1,48 @@
+html
+	head
+		title Digital Discharge
+		include include/head.jade
+
+	body(ng-app='dd', ng-controller='controller')
+		header
+			include include/progress.jade
+
+		main(ng-model='slide', ng-cloak): .wrapper
+			.container: .card.hoverable
+				.row(ng-class="{'valign-wrapper': slide.image_align=='Left' || slide.image_align=='Right'}")
+
+					//IMAGE TOP
+					.col.s12.l12.center(ng-if='slide.image_align=="Top"')
+						.card-image: image(src='{{slide.image.resize_url}}')
+
+					//IMAGE LEFT
+					.col.s12.l4.center(ng-if='slide.image_align=="Left"')
+						.card-image: image(src='{{slide.image.resize_url}}', style='max-height:600px')
+
+					//CONTENT
+					.col.s12.center(ng-class="{l8: slide.image_align=='Left' || slide.image_align=='Right', l12: slide.image_align!='Left' && slide.image_align!='Right'}")
+						.card-content
+							i.material-icons.large.grey-text.text-lighten-3(ng-if='slide.icon') {{slide.icon}}
+							h3.grey-text.text-darken-2 {{slide.content}}
+							div(ng-if='slide.custom', ng-bind-html='trustAsHtml(slide.custom)') {{slide.custom}}
+
+					//IMAGE RIGHT
+					.col.s12.l4.center(ng-if='slide.image_align=="Right"')
+						.card-image: image(src='{{slide.image.resize_url}}', style='max-height:600px')
+
+			//Likert/MULTIPLE CHOICE
+			.container-wide(ng-if='slide.options', style='padding-top:40px', ng-cloak)
+				.radioset(ng-class='{nobar: !isLikert()}'): ul
+					li(ng-repeat='option in slide.options')
+						input(type='radio', name='radio[]', id='radio-{{$index}}')
+						label(for='radio-{{$index}}', ng-class="{wrong: !isLikert() && !option.correct, correct: !isLikert() && option.correct}")
+				.text-labels: .text-label(ng-repeat='option in slide.options') {{option.text}}
+
+		footer(ng-click='advanceSlide()')
+			include include/footer.jade
+
+		script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js')
+		script(src='https://cdn.firebase.com/js/client/2.4.2/firebase.js')
+		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.js')
+		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-sanitize.js')
+		script(src='/js/app.js')
